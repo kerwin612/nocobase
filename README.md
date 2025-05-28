@@ -1,3 +1,76 @@
+# NocoBase Custom Selector Plugin
+
+This is a custom selector plugin for NocoBase that provides enhanced association field selection capabilities with customizable rendering functions.
+
+## Features
+
+- **Custom Rendering**: Configure custom render functions for list items and selected values
+- **Rich Display**: Support for avatars, multiple field display, and custom styling
+- **Field Information**: Automatically displays available fields from target collection to help users configure render functions
+- **Multi-language Support**: Supports English, Chinese, and Japanese
+- **Easy Configuration**: Simple modal-based configuration interface
+
+## Usage
+
+1. **Enable Custom Selector**: In the field settings of an association field, toggle on "Custom Selector"
+2. **Configure Rendering**: Click "Configure Custom Selector" to open the configuration modal
+3. **View Available Fields**: The configuration modal shows all available fields from the target collection
+4. **Edit Render Functions**: Customize the `renderItem` function for list display and `renderValue` function for selected value display
+5. **Save Configuration**: Click "Confirm" to save your custom render functions
+
+## Configuration
+
+### Available Fields Display
+The configuration modal automatically detects and displays all available fields from the target collection, including:
+- Field name
+- Field title (if different from name)
+- Field interface type
+
+### Render Functions
+
+#### List Item Render Function (`renderItem`)
+- **Parameter**: `item` - The data object for each item in the selection list
+- **Return**: HTML string for rendering the list item
+- **Default**: Displays avatar, name, and secondary information (department, email, phone)
+
+#### Selected Value Render Function (`renderValue`)
+- **Parameter**: `value` - The selected data object
+- **Return**: HTML string for rendering the selected value
+- **Default**: Displays avatar and name in a compact format
+
+### Example Usage
+
+```javascript
+// Example renderItem function
+function(item) {
+  var name = item.name || item.title || item.id || '';
+  var department = item.department || '';
+  var email = item.email || '';
+  
+  return '<div style="display: flex; align-items: center;">' +
+    '<div style="margin-right: 12px;">' +
+      '<div style="width: 40px; height: 40px; border-radius: 50%; background-color: #1890ff; color: white; display: flex; align-items: center; justify-content: center; font-weight: bold;">' +
+        String(name).charAt(0).toUpperCase() +
+      '</div>' +
+    '</div>' +
+    '<div>' +
+      '<div style="font-weight: bold;">' + name + '</div>' +
+      (department ? '<div style="color: #8c8c8c; font-size: 12px;">' + department + '</div>' : '') +
+    '</div>' +
+  '</div>';
+}
+```
+
+## Installation
+
+This plugin is part of the NocoBase ecosystem. To use it:
+
+1. Ensure you have NocoBase installed and running
+2. The plugin should be available in your NocoBase instance
+3. Enable the plugin in the plugin manager if needed
+
+---
+
 English | [中文](./README.zh-CN.md) | [日本語](./README.ja-JP.md)
 
 https://github.com/user-attachments/assets/a50c100a-4561-4e06-b2d2-d48098659ec0
