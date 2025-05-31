@@ -10,7 +10,7 @@
 import React, { useState, useEffect, useMemo, useCallback, useRef } from 'react';
 import { Modal, Input, List, Pagination, Spin, Button, Space } from 'antd';
 import { CheckOutlined, CloseOutlined } from '@ant-design/icons';
-import { observer } from '@formily/react';
+import { observer, Schema } from '@formily/react';
 import { useRequest } from '@nocobase/client';
 import { useTranslation } from 'react-i18next';
 import { SelectorCommonProps, buildQueryParams, createDebouncedSearch } from './utils';
@@ -273,7 +273,7 @@ export const ModalSelector: React.FC<SelectorCommonProps> = observer(
             ) : null
           }
           width={800}
-          title={`${t('Select')}${collectionField?.uiSchema?.title || t('Association Data')}${
+          title={`${t('Select')}${Schema.compile(collectionField?.uiSchema?.title || 'Association Data', { t })}${
             isMultiple ? ` (${t('Multiple Selection')})` : ''
           }`}
           destroyOnClose

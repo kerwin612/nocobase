@@ -40,8 +40,18 @@ export const CustomSelector: React.FC<CustomSelectorProps> = observer(
     }, [fieldSchema, field, renderValue]);
 
     // Get selector mode from schema or field props
-    const enableModal = useMemo(() => {
-      return fieldSchema['x-component-props']?.enableModal !== false && field?.componentProps?.enableModal !== false;
+    const customSelectorMode = useMemo(() => {
+      return (
+        fieldSchema['x-component-props']?.customSelectorMode || field?.componentProps?.customSelectorMode !== false
+      );
+    }, [fieldSchema, field]);
+
+    // Get allow multiple from schema or field props
+    const customAllowMultiple = useMemo(() => {
+      return (
+        (fieldSchema['x-component-props']?.allowMultiple || field?.componentProps?.allowMultiple) ??
+        (fieldSchema?.['x-component-props']?.multiple || field?.componentProps?.multiple || false)
+      );
     }, [fieldSchema, field]);
 
     // Get association field information
@@ -57,17 +67,6 @@ export const CustomSelector: React.FC<CustomSelectorProps> = observer(
 
       // Check field required property
       if (field?.['required']) return true;
-
-      return false;
-    }, [fieldSchema, field]);
-
-    // Check if field supports multiple selection
-    const isMultiple = useMemo(() => {
-      // Check field schema multiple property
-      if (fieldSchema?.['x-component-props']?.multiple) return true;
-
-      // Check field componentProps.multiple property
-      if (field?.componentProps?.multiple) return true;
 
       return false;
     }, [fieldSchema, field]);
@@ -89,13 +88,13 @@ export const CustomSelector: React.FC<CustomSelectorProps> = observer(
       actualRenderValue,
       collectionField,
       isRequired,
-      isMultiple,
+      isMultiple: customAllowMultiple,
       collection,
       record,
     };
 
     // Render appropriate selector based on mode
-    if (enableModal) {
+    if (customSelectorMode === 'modal') {
       return <ModalSelector {...commonProps} />;
     } else {
       return <DropdownSelector {...commonProps} />;

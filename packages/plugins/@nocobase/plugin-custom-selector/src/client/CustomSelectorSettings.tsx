@@ -8,8 +8,14 @@
  */
 
 import { useField, useFieldSchema } from '@formily/react';
-import { useCollection, useDesignable, SchemaSettingsItem } from '@nocobase/client';
-import { Tabs, Input, Form, Modal, Button, message, Radio } from 'antd';
+import {
+  useCollection,
+  useDesignable,
+  SchemaSettingsItem,
+  useIsFieldReadPretty,
+  useCollectionField,
+} from '@nocobase/client';
+import { Tabs, Input, Form, Modal, Button, message, Radio, Switch } from 'antd';
 import _ from 'lodash';
 import React, { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -155,6 +161,7 @@ const CustomSelectorConfigModal = ({
   visible,
   onCancel,
   onOk,
+  field,
   fieldSchema,
   availableFields,
   t,
@@ -168,13 +175,22 @@ const CustomSelectorConfigModal = ({
   React.useEffect(() => {
     if (visible) {
       const initialValues = {
-        selectorMode: fieldSchema['x-component-props']?.enableModal !== false ? 'modal' : 'dropdown', // Default to modal mode
+        allowMultiple:
+          fieldSchema['x-component-props']?.allowMultiple ??
+          (fieldSchema?.['x-component-props']?.multiple || field?.componentProps?.multiple || false),
+        selectorMode: fieldSchema['x-component-props']?.customSelectorMode || 'dropdown', // Default to dropdown mode
         renderItem: fieldSchema['x-component-props']?.renderItem || dynamicDefaultRenderItem,
         renderValue: fieldSchema['x-component-props']?.renderValue || dynamicDefaultRenderValue,
       };
       form.setFieldsValue(initialValues);
     }
   }, [visible, fieldSchema, dynamicDefaultRenderItem, dynamicDefaultRenderValue, form]);
+
+  const useShowMultipleSwitch = () => {
+    const isFieldReadPretty = useIsFieldReadPretty();
+    const collectionField = useCollectionField();
+    return !isFieldReadPretty && ['hasMany', 'belongsToMany', 'belongsToArray'].includes(collectionField?.type);
+  };
 
   const handleOk = async () => {
     try {
@@ -185,7 +201,8 @@ const CustomSelectorConfigModal = ({
       // For each field, use the current form value, or default if undefined/null
       // Empty string means user intentionally cleared it, should use default
       const completeValues = {
-        enableModal: currentValues.selectorMode === 'modal',
+        allowMultiple: currentValues.allowMultiple,
+        customSelectorMode: currentValues.selectorMode,
         renderItem:
           currentValues.renderItem !== undefined
             ? currentValues.renderItem.trim() || dynamicDefaultRenderItem
@@ -228,6 +245,11 @@ const CustomSelectorConfigModal = ({
               label: t('Basic Configuration'),
               children: (
                 <div style={{ minHeight: '460px' }}>
+                  {useShowMultipleSwitch && (
+                    <Form.Item name="allowMultiple" label={t('Allow multiple')} style={{ marginBottom: '8px' }}>
+                      <Switch size="small" />
+                    </Form.Item>
+                  )}
                   <Form.Item name="selectorMode" label={t('Selector Mode')} style={{ marginBottom: '8px' }}>
                     <Radio.Group>
                       <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
@@ -469,7 +491,7 @@ export function CustomSelectorConfigEditor(props) {
   }, [availableFields]);
 
   const handleModalOk = async (values) => {
-    const { enableModal, renderItem, renderValue } = values;
+    const { allowMultiple, customSelectorMode, renderItem, renderValue } = values;
 
     // If user clears the input, use dynamic default values
     const finalRenderItem = renderItem && renderItem.trim() ? renderItem.trim() : dynamicDefaultRenderItem;
@@ -477,20 +499,23 @@ export function CustomSelectorConfigEditor(props) {
 
     // Save configuration to field schema
     field.componentProps = field.componentProps || {};
-    field.componentProps.enableModal = enableModal;
     field.componentProps.renderItem = finalRenderItem;
     field.componentProps.renderValue = finalRenderValue;
+    field.componentProps.customSelectorMode = customSelectorMode;
+    field.componentProps.allowMultiple = allowMultiple;
 
-    _.set(fieldSchema, 'x-component-props.enableModal', enableModal);
     _.set(fieldSchema, 'x-component-props.renderItem', finalRenderItem);
     _.set(fieldSchema, 'x-component-props.renderValue', finalRenderValue);
+    _.set(fieldSchema, 'x-component-props.customSelectorMode', customSelectorMode);
+    _.set(fieldSchema, 'x-component-props.allowMultiple', allowMultiple);
 
     const patchData = {
       schema: {
         'x-uid': fieldSchema['x-uid'],
         'x-component-props': {
           ...fieldSchema['x-component-props'],
-          enableModal,
+          allowMultiple,
+          customSelectorMode,
           renderItem: finalRenderItem,
           renderValue: finalRenderValue,
         },
@@ -511,6 +536,7 @@ export function CustomSelectorConfigEditor(props) {
         visible={modalVisible}
         onCancel={() => setModalVisible(false)}
         onOk={handleModalOk}
+        field={field}
         fieldSchema={fieldSchema}
         availableFields={availableFields}
         t={t}
