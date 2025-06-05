@@ -1,0 +1,26 @@
+{
+  "name": "@nocobase/plugin-block-fullscreen",
+  "version": "1.7.1",
+  "main": "./dist/server/index.js",
+  "displayName": "Block: Fullscreen Container",
+  "displayName.zh-CN": "区块：全屏容器",
+  "description": "A universal fullscreen container block that can wrap any content and provide fullscreen functionality.",
+  "description.zh-CN": "通用全屏容器区块，可以包装任何内容并提供全屏功能。",
+  "devDependencies": {
+    "@ant-design/icons": "5.x",
+    "@formily/react": "2.x",
+    "antd": "5.x",
+    "react": "^18.2.0",
+    "react-i18next": "^11.15.1"
+  },
+  "peerDependencies": {
+    "@nocobase/client": "1.x",
+    "@nocobase/server": "1.x",
+    "@nocobase/test": "1.x"
+  },
+  "keywords": [
+    "Blocks"
+  ],
+  "license": "AGPL-3.0",
+  "gitHead": "d0b4efe4be55f8c79a98a331d99d9f8cf99021a1"
+}
