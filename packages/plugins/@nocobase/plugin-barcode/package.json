@@ -1,0 +1,39 @@
+{
+  "name": "@nocobase/plugin-barcode",
+  "version": "1.7.14",
+  "displayName": "Barcode",
+  "displayName.zh-CN": "条码/二维码",
+  "description": "A plugin for generating barcodes and QR codes",
+  "description.zh-CN": "一个用于生成条码和二维码的插件",
+  "main": "./dist/server/index.js",
+  "files": [
+    "lib",
+    "src",
+    "README.md",
+    "README.zh-CN.md",
+    "CHANGELOG.md",
+    "CHANGELOG.zh-CN.md"
+  ],
+  "license": "AGPL-3.0",
+  "publishConfig": {
+    "registry": "https://registry.nocobase.com/",
+    "access": "public"
+  },
+  "dependencies": {
+    "qrcode.react": "^3.1.0",
+    "jsbarcode": "^3.11.5"
+  },
+  "devDependencies": {
+    "@ant-design/icons": "5.x",
+    "@formily/react": "2.x",
+    "antd": "5.x",
+    "react": "^18.2.0",
+    "react-i18next": "^11.15.1"
+  },
+  "peerDependencies": {
+    "@nocobase/client": "1.x",
+    "@nocobase/server": "1.x",
+    "@nocobase/test": "1.x"
+  },
+  "gitHead": "d0b4efe4be55f8c79a98a331d99d9f8cf99021a1"
+}
